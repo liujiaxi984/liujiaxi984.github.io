@@ -181,7 +181,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-21 00:23:32" itemprop="dateModified" datetime="2020-11-21T00:23:32+08:00">2020-11-21</time>
+                <time title="修改时间：2020-11-21 01:08:27" itemprop="dateModified" datetime="2020-11-21T01:08:27+08:00">2020-11-21</time>
               </span>
 
           
@@ -207,7 +207,7 @@
 </ol>
 <p>使用–tool=&lt;toolname&gt;  [默认为 memcheck] 可以选择使用哪个工具</p>
 <h2 id="准备程序"><a href="#准备程序" class="headerlink" title="准备程序"></a>准备程序</h2><p>使用gcc -g参数编译程序，以保证Valgrind的错误信息包含正确的行号，如果不关心程序运行速度问题，建议使用-O0选项，因为-O1选项下错误信息可能给出错误的行号，请不要使用-O2及以上的优化等级。</p>
-<h2 id="使用Memcheck做内存分析"><a href="#使用Memcheck做内存分析" class="headerlink" title="使用Memcheck做内存分析"></a>使用Memcheck做内存分析</h2><p>假设有一个程序myprog ，可以使用如下命令来进行内存分析：</p>
+<h2 id="使用Memcheck做内存分析"><a href="#使用Memcheck做内存分析" class="headerlink" title="使用Memcheck做内存分析"></a>使用Memcheck做内存分析</h2><h3 id="运行内存分析"><a href="#运行内存分析" class="headerlink" title="运行内存分析"></a>运行内存分析</h3><p>假设有一个程序myprog ，可以使用如下命令来进行内存分析：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">valgrind --leak-check=full --show-reachable=yes --trace-children=yes --track-origins=yes  myprog arg1 arg2</span></span><br></pre></td></tr></table></figure>
 
 <p>其中</p>
@@ -215,8 +215,22 @@
 <p>–show-reachable=yes相当于–show-leak-kinds=all，展示所有类型的内存泄漏</p>
 <p>–trace-children=yes是指定跟入子进程</p>
 <p>–track-origins=yes控制Memcheck跟踪未初始化值的源头。会为Valgrind带来较大的开销，导致运行速度减慢。因此也可以不指定，Valgrind仍会汇报对未初始化值的使用，但无法告诉你这个值来自于哪里。</p>
-<p>如果您的程序是会正常退出的程序，那么当程序退出的时候，Valgrind自然会输出内存泄漏的信息。如果您的程序是个守护进程，那么也不要紧，我们只要在别的终端下杀死memcheck进程：</p>
-<p>#killall memcheck</p>
+<h3 id="错误信息"><a href="#错误信息" class="headerlink" title="错误信息"></a>错误信息</h3><p>一个错误信息可能长这个样子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D; Invalid write of size 4</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;    at 0x804838F: f (example.c:6)</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;    by 0x80483AB: main (example.c:11)</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;  Address 0x1BA45050 is 0 bytes after a block of size 40 alloc&#39;d</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;    at 0x1B8FF5CD: malloc (vg_replace_malloc.c:130)</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;    by 0x8048385: f (example.c:5)</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;    by 0x80483AB: main (example.c:11)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>19182是进程id</li>
+<li>第一行是错误类型</li>
+<li>下来的内容是堆栈跟踪，一般从下往上看</li>
+</ul>
+<h3 id="内存泄漏信息"><a href="#内存泄漏信息" class="headerlink" title="内存泄漏信息"></a>内存泄漏信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D; 40 bytes in 1 blocks are definitely lost in loss record 1 of 1</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;    at 0x1B8FF5CD: malloc (vg_replace_malloc.c:130)</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;    by 0x8048385: f (a.c:5)</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;    by 0x80483AB: main (a.c:11)</span><br></pre></td></tr></table></figure>
+
+<p>堆栈跟踪显示了泄漏的内存被分配的位置，有许多种内存泄漏类型，最重要的有两种：</p>
+<ul>
+<li>definitely lost：你的程序肯定有内存泄漏</li>
+<li>probably lost：你的程序在泄漏内存，除非你在用指针做一些有趣的事情（比如移动它到堆块的中间）</li>
+</ul>
+<h3 id="使你的程序Memcheck-clean"><a href="#使你的程序Memcheck-clean" class="headerlink" title="使你的程序Memcheck-clean"></a>使你的程序Memcheck-clean</h3><p>Memcheck不能检测到所有类型的内存错误，例如，它不能检测到对静态分配的数组或堆栈上的数组的超出范围的读或写。但它能检测到许多能让你程序崩溃的内存错误。因此确保你的程序Memcheck-clean（Memcheck并不汇报任何错误）是十分重要的。</p>
 
       
     </div>
