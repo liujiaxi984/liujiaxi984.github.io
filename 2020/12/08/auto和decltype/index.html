@@ -20,28 +20,35 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="auto类型说明符编程时常常需要把表达式的值赋给变量，这就要求在声明变量的时候清楚的知道表达式的类型，而有时要做到这一点是很难的。因此C++11引入了auto类型说明符，让编译器去替我们分析表达式的类型。 1auto item &#x3D; val1 + val2;  比如上面这个式子，假设val1和val2的类型是double，那么item的类型便也是double。 使用auto也能在一个语句中声明多个变">
+<meta property="og:type" content="article">
+<meta property="og:title" content="auto和decltype">
+<meta property="og:url" content="http://example.com/2020/12/08/auto%E5%92%8Cdecltype/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="auto类型说明符编程时常常需要把表达式的值赋给变量，这就要求在声明变量的时候清楚的知道表达式的类型，而有时要做到这一点是很难的。因此C++11引入了auto类型说明符，让编译器去替我们分析表达式的类型。 1auto item &#x3D; val1 + val2;  比如上面这个式子，假设val1和val2的类型是double，那么item的类型便也是double。 使用auto也能在一个语句中声明多个变">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/12/09/QO9SjBTXqna7LtN.png">
+<meta property="article:published_time" content="2020-12-08T14:07:31.906Z">
+<meta property="article:modified_time" content="2020-12-08T16:28:31.950Z">
 <meta property="article:author" content="Jiaxi Liu">
+<meta property="article:tag" content="C++">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/12/09/QO9SjBTXqna7LtN.png">
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2020/12/08/auto%E5%92%8Cdecltype/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>Hexo</title>
+  <title>auto和decltype | Hexo</title>
   
 
 
@@ -144,9 +151,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -162,10 +170,9 @@
       <meta itemprop="name" content="Hexo">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/08/auto%E5%92%8Cdecltype/" class="post-title-link" itemprop="url">auto和decltype</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          auto和decltype
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -185,6 +192,13 @@
               </span>
 
           
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
 
         </div>
       </header>
@@ -195,7 +209,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="auto类型说明符"><a href="#auto类型说明符" class="headerlink" title="auto类型说明符"></a>auto类型说明符</h2><p>编程时常常需要把表达式的值赋给变量，这就要求在声明变量的时候清楚的知道表达式的类型，而有时要做到这一点是很难的。因此C++11引入了<code>auto</code>类型说明符，让编译器去替我们分析表达式的类型。</p>
+        <h2 id="auto类型说明符"><a href="#auto类型说明符" class="headerlink" title="auto类型说明符"></a>auto类型说明符</h2><p>编程时常常需要把表达式的值赋给变量，这就要求在声明变量的时候清楚的知道表达式的类型，而有时要做到这一点是很难的。因此C++11引入了<code>auto</code>类型说明符，让编译器去替我们分析表达式的类型。</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> item = val1 + val2;</span><br></pre></td></tr></table></figure>
 
 <p>比如上面这个式子，假设val1和val2的类型是double，那么item的类型便也是double。</p>
@@ -240,121 +254,33 @@
 <p>因此<code>decltype((variable))</code>的结果永远是引用，而<code>decltype(variable)</code>的结果只有当variable本身就是一个引用时才是引用。</p>
 <p><img src="https://i.loli.net/2020/12/09/QO9SjBTXqna7LtN.png" alt="decltype.png"></p>
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/20/valgrind/">
+        
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Jiaxi Liu">
-      <meta itemprop="description" content="">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/20/valgrind/" class="post-title-link" itemprop="url">Valgrind</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-11-20 18:41:19" itemprop="dateCreated datePublished" datetime="2020-11-20T18:41:19+08:00">2020-11-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-09 00:28:50" itemprop="dateModified" datetime="2020-12-09T00:28:50+08:00">2020-12-09</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Valgrind简介"><a href="#Valgrind简介" class="headerlink" title="Valgrind简介"></a>Valgrind简介</h2><p>Valgrind是一个用于调试和分析Linux可执行文件的程序。它由内核和一系列调试和分析工具组成，这些工具包括：</p>
-<ol>
-<li><strong>Memcheck</strong> 内存错误检测器</li>
-<li><strong>Cachegrind</strong> Cache和分支预测分析器</li>
-<li><strong>Callgrind</strong> 可以生成调用图的Cache分析器</li>
-<li><strong>Helgrind</strong> 线程错误检测器</li>
-<li><strong>DRD</strong> 另一个线程错误检测器</li>
-<li><strong>Massif</strong> 堆分析器</li>
-<li><strong>DHAT</strong> 另一个堆分析器</li>
-</ol>
-<p>使用–tool=&lt;toolname&gt;  [默认为 memcheck] 可以选择使用哪个工具</p>
-<h2 id="准备程序"><a href="#准备程序" class="headerlink" title="准备程序"></a>准备程序</h2><p>使用gcc -g参数编译程序，以保证Valgrind的错误信息包含正确的行号，如果不关心程序运行速度问题，建议使用-O0选项，因为-O1选项下错误信息可能给出错误的行号，请不要使用-O2及以上的优化等级。</p>
-<h2 id="使用Memcheck做内存分析"><a href="#使用Memcheck做内存分析" class="headerlink" title="使用Memcheck做内存分析"></a>使用Memcheck做内存分析</h2><h3 id="运行内存分析"><a href="#运行内存分析" class="headerlink" title="运行内存分析"></a>运行内存分析</h3><p>假设有一个程序myprog ，可以使用如下命令来进行内存分析：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">valgrind --leak-check=full --show-reachable=yes --trace-children=yes --track-origins=yes  myprog arg1 arg2</span></span><br></pre></td></tr></table></figure>
-
-<p>其中</p>
-<p>–leak-check=full指的是展示每处内存泄漏的细节</p>
-<p>–show-reachable=yes相当于–show-leak-kinds=all，展示所有类型的内存泄漏</p>
-<p>–trace-children=yes是指定跟入子进程</p>
-<p>–track-origins=yes控制Memcheck跟踪未初始化值的源头。会为Valgrind带来较大的开销，导致运行速度减慢。因此也可以不指定，Valgrind仍会汇报对未初始化值的使用，但无法告诉你这个值来自于哪里。</p>
-<h3 id="错误信息"><a href="#错误信息" class="headerlink" title="错误信息"></a>错误信息</h3><p>一个错误信息可能长这个样子：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D; Invalid write of size 4</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;    at 0x804838F: f (example.c:6)</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;    by 0x80483AB: main (example.c:11)</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;  Address 0x1BA45050 is 0 bytes after a block of size 40 alloc&#39;d</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;    at 0x1B8FF5CD: malloc (vg_replace_malloc.c:130)</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;    by 0x8048385: f (example.c:5)</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;    by 0x80483AB: main (example.c:11)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>19182是进程id</li>
-<li>第一行是错误类型</li>
-<li>下来的内容是堆栈跟踪，一般从下往上看</li>
-</ul>
-<h3 id="内存泄漏信息"><a href="#内存泄漏信息" class="headerlink" title="内存泄漏信息"></a>内存泄漏信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D; 40 bytes in 1 blocks are definitely lost in loss record 1 of 1</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;    at 0x1B8FF5CD: malloc (vg_replace_malloc.c:130)</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;    by 0x8048385: f (a.c:5)</span><br><span class="line">&#x3D;&#x3D;19182&#x3D;&#x3D;    by 0x80483AB: main (a.c:11)</span><br></pre></td></tr></table></figure>
-
-<p>堆栈跟踪显示了泄漏的内存被分配的位置，有许多种内存泄漏类型，最重要的有两种：</p>
-<ul>
-<li>definitely lost：你的程序肯定有内存泄漏</li>
-<li>probably lost：你的程序在泄漏内存，除非你在用指针做一些有趣的事情（比如移动它到堆块的中间）</li>
-</ul>
-<h3 id="使你的程序Memcheck-clean"><a href="#使你的程序Memcheck-clean" class="headerlink" title="使你的程序Memcheck-clean"></a>使你的程序Memcheck-clean</h3><p>Memcheck不能检测到所有类型的内存错误，例如，它不能检测到对静态分配的数组或堆栈上的数组的超出范围的读或写。但它能检测到许多能让你程序崩溃的内存错误。因此确保你的程序Memcheck-clean（Memcheck并不汇报任何错误）是十分重要的。</p>
-
-      
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/20/valgrind/" rel="prev" title="Valgrind">
+      <i class="fa fa-chevron-left"></i> Valgrind
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-
   
 
 
@@ -407,6 +333,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#auto%E7%B1%BB%E5%9E%8B%E8%AF%B4%E6%98%8E%E7%AC%A6"><span class="nav-number">1.</span> <span class="nav-text">auto类型说明符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%8D%E5%90%88%E7%B1%BB%E5%9E%8B%E3%80%81%E5%B8%B8%E9%87%8F%E5%92%8Cauto"><span class="nav-number">1.1.</span> <span class="nav-text">复合类型、常量和auto</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#decltype%E7%B1%BB%E5%9E%8B%E6%8C%87%E7%A4%BA%E7%AC%A6"><span class="nav-number">2.</span> <span class="nav-text">decltype类型指示符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#decltype%E5%92%8C%E5%BC%95%E7%94%A8"><span class="nav-number">2.1.</span> <span class="nav-text">decltype和引用</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
